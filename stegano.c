@@ -101,6 +101,9 @@ int dechiffre(char *cryptedBuffer, int cryptedBufferLength, char *decryptedFileP
     int paddingFrom = padding > 0 ? cryptedBufferLength - padding : cryptedBufferLength;
 
     printf("Padding %d, from : %d", padding, paddingFrom);
+    memcpy(buffer, cryptedBuffer, len);
+    xorBuffer(len, decryptedBuffer, buffer, lastXoredBlock, key, false);
+    rintf("Decrypted bytes : %s\n", decryptedBuffer);
     
     for(i = 0; i <= cryptedBufferLength; i++) {
         // printf("Buffer %d => %c \n", i, cryptedBuffer[i]);
