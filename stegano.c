@@ -20,11 +20,11 @@ int printUsage() {
 int xorBuffer(int length, char *destination, char *buffer, char *lastCryptedBlock, char *key, bool crypt) {
     int i = 0;
 
-    // for(i = 0; i < length; i ++) {
-    //     if(!crypt) {
-    //         destination[i] = (char)(buffer[i] ^ key[i]);
-    //     }
-    // }
+    for(i = 0; i < length; i ++) {
+        if(!crypt) {
+            destination[i] = (char)(buffer[i] ^ key[i]);
+        }
+    }
     
     // printf(" After part 1 : %s\n", destination);
 
@@ -33,11 +33,11 @@ int xorBuffer(int length, char *destination, char *buffer, char *lastCryptedBloc
         destination[i] = buffer[i] ^ lastCryptedBlock[i];
     }
 
-    // for(i = 0; i < length; i ++) {
-    //     if(crypt) {
-    //         destination[i] = (char)(destination[i] ^ key[i]);
-    //     }
-    // }
+    for(i = 0; i < length; i ++) {
+        if(crypt) {
+            destination[i] = (char)(destination[i] ^ key[i]);
+        }
+    }
     return i;
 }
 
@@ -214,13 +214,24 @@ int chiffre(char *sourceFilePath, char *destFilePath, char *key, bool crypt) {
         memset(crypted, 0, len);
     }
     
+    /* Open the destination file in write mode */
+    printf("writing");
+    FILE *fileWrite = fopen("ouloulou.txt", "wb");
+    if (fileWrite == NULL) {
+        printf("Error opening destination file!\n");
+        exit(1);
+    }
+    fwrite(cryptedBuffer, sizeof(char), nbCharsInFile, fileWrite);
+    fclose(fileWrite);
+
+    
     /* Close our files */
     fclose(fileRead);
     
 
     // ---------------------TEST------------------------
     // DONE Crypting buffer, let's decrypt it
-    dechiffre(cryptedBuffer, count, destFilePath, key);
+    //dechiffre(cryptedBuffer, count, destFilePath, key);
     // ------------------- ENDTEST ---------------------
 
     // Finally we free our allocations
