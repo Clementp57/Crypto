@@ -29,7 +29,6 @@ int xorBuffer(int length, char *destination, char *buffer, char *lastCryptedBloc
     // printf(" After part 1 : %s\n", destination);
 
     for(i = 0; i < length; i ++) {
-        printf("i : %d", i);
         /* CBC : Xor on last crypted block */
         destination[i] = buffer[i] ^ lastCryptedBlock[i];
     }
@@ -101,28 +100,28 @@ int dechiffre(char *cryptedBuffer, int cryptedBufferLength, char *decryptedFileP
     int paddingFrom = padding > 0 ? cryptedBufferLength - padding : cryptedBufferLength;
 
     printf("Padding %d, from : %d", padding, paddingFrom);
-    memcpy(buffer, cryptedBuffer, len);
-    xorBuffer(len, decryptedBuffer, buffer, lastXoredBlock, key, false);
-    rintf("Decrypted bytes : %s\n", decryptedBuffer);
     
     for(i = 0; i <= cryptedBufferLength; i++) {
         // printf("Buffer %d => %c \n", i, cryptedBuffer[i]);
-        if(count < len - 1 && (i != cryptedBufferLength)) {
+        printf (" i : %d // count : %d \n", i, count);
+        if(count < len) {
+            printf("Fill buffer with %c \n", cryptedBuffer[i]);
             /* fill buffer */
             buffer[count++] = cryptedBuffer[i];
-
-        } else {
+        } 
+        if(count == len || (i > paddingFrom && count == padding)) {
             printf("__________\n");
-            
+            printf("decrypt buffer \n");
             /* Buffer full, let's decrypt it */
             int decryptedBytes = 0;
-            if(i != paddingFrom) {
+            if(i < paddingFrom) {
                 decryptedBytes = xorBuffer(len, decryptedBuffer, buffer, lastXoredBlock, key, false);
             } else {
+                printf(" IN PADDING \n");
                 decryptedBytes = xorBuffer(padding, decryptedBuffer, buffer, lastXoredBlock, key, false);
             }
             
-            printf("Decrypted %d bytes : %s\n", decryptedBytes, decryptedBuffer);
+            // printf("Decrypted %d bytes : %s\n", decryptedBytes, decryptedBuffer);
             memcpy(lastXoredBlock, buffer, len);
             fwrite(decryptedBuffer, sizeof(char), decryptedBytes, fileWrite);
             
@@ -199,14 +198,14 @@ int chiffre(char *sourceFilePath, char *destFilePath, char *key, bool crypt) {
         //  printf(" decrypted : %s\n", decrypted);
         // printf("Crypted => %s\n", crypted);
 
-        strncat(cryptedBuffer, crypted, bytesRead);
+        // strncat(cryptedBuffer, crypted, bytesRead);
         printf("cryptedBufferContent %s \n", cryptedBuffer);
-        // int i = 0;
-        // for(i = 0; i < bytesRead; i++) {
-        //     /* We fill the globalBuffer with the crypted buffer */
-        //     cryptedBuffer[count++] = crypted[i];
-        // }
-        count+= bytesRead;
+        int i = 0;
+        for(i = 0; i < bytesRead; i++) {
+            /* We fill the globalBuffer with the crypted buffer */
+            cryptedBuffer[count++] = crypted[i];
+        }
+        // count+= bytesRead;
 
         // Store last crypted block for next iteration
         memcpy(lastXoredBlock, crypted, len);
@@ -217,6 +216,7 @@ int chiffre(char *sourceFilePath, char *destFilePath, char *key, bool crypt) {
     
     /* Close our files */
     fclose(fileRead);
+    
 
     // ---------------------TEST------------------------
     // DONE Crypting buffer, let's decrypt it
